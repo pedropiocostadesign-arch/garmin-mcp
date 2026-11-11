@@ -74,5 +74,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/telegram.ts": {
+      "maxDuration": 60
+    }
+  }
 }

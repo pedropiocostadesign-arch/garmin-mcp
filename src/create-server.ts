@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { GarminSession } from './garmin';
 import { registerActivityTools } from './tools/activities';
 import { registerHealthTools } from './tools/health';
+import { registerNutritionTools } from './tools/nutrition';
 import { registerTrainingTools } from './tools/training';
 
 /**
@@ -16,5 +17,6 @@ export function createServer(session: GarminSession): McpServer {
   registerHealthTools(server, session);
   registerTrainingTools(server, session);
   registerActivityTools(server, session);
+  registerNutritionTools(server);
   return server;
 }
