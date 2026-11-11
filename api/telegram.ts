@@ -135,7 +135,9 @@ async function handleMessage(msg: any): Promise<void> {
   try {
     let raw: any;
     let fonte: Draft['fonte'] = 'texto';
-    const photo = Array.isArray(msg.photo) ? msg.photo[msg.photo.length - 1] : null;
+    const sizes: any[] = Array.isArray(msg.photo) ? msg.photo : [];
+    // Mid-size (~800px) is plenty to recognise food and much faster than full size.
+    const photo = sizes.length ? (sizes.filter((p) => Math.max(p.width, p.height) <= 1280).pop() ?? sizes[0]) : null;
     const imageDoc = msg.document?.mime_type?.startsWith('image/') ? msg.document : null;
     const voice = msg.voice ?? msg.audio ?? null;
 
@@ -197,6 +199,18 @@ async function handleCallback(cb: any): Promise<void> {
 
 export default async function handler(req: Req, res: Res) {
   if (!token() || !secret()) return res.status(503).json({ error: 'Bot não configurado.' });
+
+  if (req.method === 'GET' && param(req, 'models') === secret()) {
+    // Which Gemini models this key can call (names only, no secrets).
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
+      headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY?.trim() ?? '' }
+    });
+    const b: any = await r.json().catch(() => ({}));
+    const names = (b.models ?? [])
+      .filter((m: any) => (m.supportedGenerationMethods ?? []).includes('generateContent'))
+      .map((m: any) => String(m.name).replace('models/', ''));
+    return res.status(200).json({ status: r.status, models: names, error: b.error?.message });
+  }
 
   if (req.method === 'GET') {
     if (param(req, 'setup') !== secret()) return res.status(403).json({ error: 'forbidden' });
