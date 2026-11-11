@@ -25,7 +25,9 @@ import {
 } from '../src/meals';
 import { header, issuerOf, param, Req, Res } from './_http';
 
-const token = () => process.env.TELEGRAM_BOT_TOKEN?.trim() ?? '';
+// Tolerate pasted quotes, spaces or a leading "bot" from the BotFather message.
+const token = () =>
+  (process.env.TELEGRAM_BOT_TOKEN ?? '').trim().replace(/^["']|["']$/g, '').replace(/^bot(?=\d)/, '').replace(/\s+/g, '');
 const secret = () => process.env.TELEGRAM_WEBHOOK_SECRET?.trim() ?? '';
 
 async function tg(method: string, payload: Record<string, unknown>): Promise<any> {
@@ -211,7 +213,8 @@ export default async function handler(req: Req, res: Res) {
         { command: 'ajuda', description: 'Como usar' }
       ]
     });
-    return res.status(200).json({ webhook: url, telegram: result });
+    const t = token();
+    return res.status(200).json({ webhook: url, telegram: result, token_shape: { length: t.length, looks_valid: /^\d{6,12}:[A-Za-z0-9_-]{30,}$/.test(t) } });
   }
 
   if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
