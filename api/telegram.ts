@@ -200,6 +200,16 @@ async function handleCallback(cb: any): Promise<void> {
 export default async function handler(req: Req, res: Res) {
   if (!token() || !secret()) return res.status(503).json({ error: 'Bot não configurado.' });
 
+  if (req.method === 'GET' && param(req, 'test') === secret()) {
+    const t0 = Date.now();
+    try {
+      const raw = await estimateMeal({ text: 'cuscuz com 2 ovos mexidos e café preto' });
+      return res.status(200).json({ ms: Date.now() - t0, draft: normalizeDraft(raw, 'texto') });
+    } catch (err) {
+      return res.status(200).json({ ms: Date.now() - t0, error: err instanceof Error ? err.message : String(err) });
+    }
+  }
+
   if (req.method === 'GET' && param(req, 'models') === secret()) {
     // Which Gemini models this key can call (names only, no secrets).
     const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', {
