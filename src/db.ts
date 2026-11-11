@@ -41,8 +41,11 @@ const key = (userId: string) => `garmin:tokens:${assertUserId(userId)}`;
 
 /** Redis is used when configured; otherwise everything falls back to the file. */
 function redis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Accept both the Upstash console names and the Vercel Marketplace (KV_*)
+  // names, and tolerate stray whitespace or quotes from dashboard pastes.
+  const clean = (v?: string) => v?.trim().replace(/^["']|["']$/g, '').trim() || undefined;
+  const url = clean(process.env.KV_REST_API_URL) ?? clean(process.env.UPSTASH_REDIS_REST_URL);
+  const token = clean(process.env.KV_REST_API_TOKEN) ?? clean(process.env.UPSTASH_REDIS_REST_TOKEN);
   if (!url || !token) return null;
   // Required lazily so local stdio never pays for the client or its env checks.
   const { Redis } = require('@upstash/redis') as typeof import('@upstash/redis');
