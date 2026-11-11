@@ -3,7 +3,7 @@
  * line of text into an itemized meal with calories and macros.
  */
 
-const MODEL = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash';
 
 const SYSTEM = `Você é um nutricionista esportivo que estima refeições a partir de fotos, áudios ou texto, para um triatleta brasileiro.
 Regras:
@@ -71,9 +71,8 @@ export async function estimateMeal(input: {
   if (input.text) parts.push({ text: input.text });
   if (!parts.length) throw new Error('Nada para analisar.');
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-    {
+  const call = (model: string) =>
+    fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify({
@@ -85,9 +84,19 @@ export async function estimateMeal(input: {
           response_schema: SCHEMA
         }
       })
+    });
+
+  let res = await call(MODEL);
+  let body: any = await res.json().catch(() => ({}));
+  // Google retires models for new keys and names the replacement in the error:
+  // follow it once instead of breaking the bot.
+  if (res.status === 404) {
+    const next = String(body?.error?.message ?? '').match(/models\/([\w.-]+)/g)?.map((m) => m.slice(7)).find((m) => m !== MODEL);
+    if (next) {
+      res = await call(next);
+      body = await res.json().catch(() => ({}));
     }
-  );
-  const body: any = await res.json().catch(() => ({}));
+  }
   if (!res.ok) {
     throw new Error(`Gemini ${res.status}: ${body?.error?.message ?? 'erro desconhecido'}`);
   }
