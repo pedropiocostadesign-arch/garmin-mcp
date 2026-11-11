@@ -71,31 +71,43 @@ export async function estimateMeal(input: {
   if (input.text) parts.push({ text: input.text });
   if (!parts.length) throw new Error('Nada para analisar.');
 
+  let thinking = true;
   const call = (model: string) =>
     fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
+      // Fail with a message instead of hanging the bot.
+      signal: AbortSignal.timeout(90_000),
       body: JSON.stringify({
         system_instruction: { parts: [{ text: SYSTEM }] },
         contents: [{ role: 'user', parts }],
         generationConfig: {
           temperature: 0.2,
           response_mime_type: 'application/json',
-          response_schema: SCHEMA
+          response_schema: SCHEMA,
+          // Food estimates need little reasoning; keep the answer fast.
+          ...(thinking ? { thinking_config: { thinking_level: 'low' } } : {})
         }
       })
     });
 
-  let res = await call(MODEL);
+  let used = MODEL;
+  let res = await call(used);
   let body: any = await res.json().catch(() => ({}));
   // Google retires models for new keys and names the replacement in the error:
   // follow it once instead of breaking the bot.
   if (res.status === 404) {
     const next = String(body?.error?.message ?? '').match(/models\/([\w.-]+)/g)?.map((m) => m.slice(7)).find((m) => m !== MODEL);
     if (next) {
+      used = next;
       res = await call(next);
       body = await res.json().catch(() => ({}));
     }
+  }
+  if (res.status === 400 && /thinking/i.test(String(body?.error?.message ?? ''))) {
+    thinking = false;
+    res = await call(used);
+    body = await res.json().catch(() => ({}));
   }
   if (!res.ok) {
     throw new Error(`Gemini ${res.status}: ${body?.error?.message ?? 'erro desconhecido'}`);

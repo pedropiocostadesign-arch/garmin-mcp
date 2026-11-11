@@ -24,6 +24,7 @@ import {
   undoLast
 } from '../src/meals';
 import { header, issuerOf, param, Req, Res } from './_http';
+import { waitUntil } from '@vercel/functions';
 
 // Tolerate pasted quotes, spaces or a leading "bot" from the BotFather message.
 const token = () =>
@@ -223,12 +224,16 @@ export default async function handler(req: Req, res: Res) {
   }
 
   const update: any = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  try {
-    if (update?.callback_query) await handleCallback(update.callback_query);
-    else if (update?.message) await handleMessage(update.message);
-  } catch (err) {
-    console.error('telegram update failed', err);
-  }
-  // Always 200 so Telegram does not retry the same update forever.
+  // Answer Telegram at once and keep working in the background: a slow model
+  // call must never hold the webhook, or Telegram queues every later message.
+  const work = (async () => {
+    try {
+      if (update?.callback_query) await handleCallback(update.callback_query);
+      else if (update?.message) await handleMessage(update.message);
+    } catch (err) {
+      console.error('telegram update failed', err);
+    }
+  })();
+  waitUntil(work);
   return res.status(200).json({ ok: true });
 }
