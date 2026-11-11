@@ -5,16 +5,28 @@ export const dateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format');
 
-/** Local calendar date — Garmin days are local, so UTC would be off by a day. */
+/**
+ * The athlete's local calendar date. Garmin days are local, and the hosted
+ * server runs in UTC, so evenings in the Americas would read as tomorrow.
+ * GARMIN_TZ overrides the zone.
+ */
+export const TIME_ZONE = process.env.GARMIN_TZ?.trim() || 'America/Sao_Paulo';
+
+export function localDate(at: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(at);
+}
+
 export function today(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-    now.getDate()
-  ).padStart(2, '0')}`;
+  return localDate();
 }
 
 export function daysAgo(n: number): string {
-  return new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
+  return localDate(new Date(Date.now() - n * 86_400_000));
 }
 
 /** Garmin returns nulls for every metric the device didn't record; drop them. */

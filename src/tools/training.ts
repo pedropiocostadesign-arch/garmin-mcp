@@ -425,18 +425,22 @@ export function registerTrainingTools(server: McpServer, g: GarminSession): void
     async ({ limit, activeOnly }) => {
       const max = limit ?? 10;
       const onlyActive = activeOnly ?? true;
-      const now = new Date();
+      // Local year/month, plus the next month so plans that cross a month end show.
+      const [yy, mm] = today().split('-').map(Number);
+      const months = [
+        { y: yy, m: mm - 1 },
+        mm === 12 ? { y: yy + 1, m: 0 } : { y: yy, m: mm }
+      ];
 
-      const [workouts, plans, gear, calendar] = await Promise.all([
+      const [workouts, plans, gear, calendar, nextCalendar] = await Promise.all([
         g.api<any[]>('/workout-service/workouts', { start: '0', limit: String(max) }).catch(() => null),
         g.api<any>('/trainingplan-service/trainingplan/plans').catch(() => null),
         g.api<any[]>('/gear-service/gear/filterGear', {
           userProfilePk: String(await g.getProfileId())
         }).catch(() => null),
         // Calendar months are 0-indexed in this service.
-        g.api<any>(`/calendar-service/year/${now.getFullYear()}/month/${now.getMonth()}`).catch(
-          () => null
-        )
+        g.api<any>(`/calendar-service/year/${months[0].y}/month/${months[0].m}`).catch(() => null),
+        g.api<any>(`/calendar-service/year/${months[1].y}/month/${months[1].m}`).catch(() => null)
       ]);
 
       // Gear mileage lives in a separate stats call keyed by gear uuid.
@@ -469,10 +473,19 @@ export function registerTrainingTools(server: McpServer, g: GarminSession): void
         (p: any) => (onlyActive ? p?.active !== false : true)
       );
 
-      const iso = today();
-      const scheduled = (calendar?.calendarItems ?? [])
-        .filter((i: any) => i?.itemType === 'workout' && i?.date >= iso)
-        .slice(0, max)
+      // From two weeks back, so a calendar can show planned against done.
+      const since = daysAgo(14);
+      const seen = new Set<string>();
+      const scheduled = [...(calendar?.calendarItems ?? []), ...(nextCalendar?.calendarItems ?? [])]
+        .filter((i: any) => i?.itemType === 'workout' && i?.date >= since)
+        .filter((i: any) => {
+          const k = `${i.date}|${i.title}`;
+          if (seen.has(k)) return false;
+          seen.add(k);
+          return true;
+        })
+        .sort((a: any, b: any) => String(a.date).localeCompare(String(b.date)))
+        .slice(0, 60)
         .map((i: any) =>
           compact({ date: i.date, title: i.title, sport: i.workoutType ?? i.activityType })
         );
