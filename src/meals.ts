@@ -155,3 +155,20 @@ export function datesBetween(start: string, end: string): string[] {
 }
 
 export { daysAgo, localDate };
+
+/* ---------- daily targets (deficit of ~500 kcal, set 2026-11-11) ---------- */
+
+export type Target = { tipo_dia: string; meta_kcal: number; meta_proteina_g: number; meta_carbo_g: number; meta_gordura_g: number };
+
+/**
+ * The athlete's weekly pattern: Mon–Thu double sessions, Fri regenerative run,
+ * Sat long ride or duathlon, Sun off. Protein and fat stay fixed; carbs move
+ * with training load.
+ */
+export function targetFor(date: string): Target {
+  const dow = new Date(`${date}T12:00:00Z`).getUTCDay(); // 0 = Sunday
+  if (dow === 0) return { tipo_dia: 'Day off', meta_kcal: 1950, meta_proteina_g: 165, meta_carbo_g: 165, meta_gordura_g: 70 };
+  if (dow === 5) return { tipo_dia: 'Regenerativo', meta_kcal: 2350, meta_proteina_g: 165, meta_carbo_g: 270, meta_gordura_g: 70 };
+  if (dow === 6) return { tipo_dia: 'Longo / duathlon', meta_kcal: 3000, meta_proteina_g: 165, meta_carbo_g: 430, meta_gordura_g: 70 };
+  return { tipo_dia: 'Treino duplo', meta_kcal: 2600, meta_proteina_g: 165, meta_carbo_g: 330, meta_gordura_g: 70 };
+}

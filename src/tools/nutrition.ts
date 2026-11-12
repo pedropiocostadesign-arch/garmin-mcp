@@ -1,6 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { datesBetween, mealsOn, totals } from '../meals';
+import { datesBetween, mealsOn, targetFor, totals } from '../meals';
 import { dateSchema, problem, text, today } from './common';
 
 /**
@@ -42,7 +42,7 @@ export function registerNutritionTools(server: McpServer): void {
     'get_nutrition_days',
     {
       description:
-        'Daily nutrition totals (meals, kcal, protein, carbs, fat) from the Telegram nutrition bot, one row per local day between two dates (default: last 7 days).',
+        'Daily nutrition totals (meals, kcal, protein, carbs, fat) from the Telegram nutrition bot, with that day\'s target by training-day type, one row per local day between two dates (default: last 7 days).',
       inputSchema: { start_date: dateSchema.optional(), end_date: dateSchema.optional() },
       annotations: { readOnlyHint: true }
     },
@@ -51,7 +51,7 @@ export function registerNutritionTools(server: McpServer): void {
         const end = end_date ?? today();
         const start = start_date ?? new Date(new Date(`${end}T12:00:00Z`).getTime() - 6 * 864e5).toISOString().slice(0, 10);
         const rows = [];
-        for (const date of datesBetween(start, end)) rows.push({ date, ...totals(await mealsOn(date)) });
+        for (const date of datesBetween(start, end)) rows.push({ date, ...totals(await mealsOn(date)), ...targetFor(date) });
         return text(rows);
       } catch (err) {
         return problem(`Could not read nutrition: ${err instanceof Error ? err.message : String(err)}`);

@@ -20,6 +20,7 @@ import {
   mealsOn,
   normalizeDraft,
   saveDraft,
+  targetFor,
   totals,
   undoLast
 } from '../src/meals';
@@ -65,6 +66,13 @@ function draftText(d: Draft): string {
   return lines.join('\n');
 }
 
+function goalLine(date: string, kcal: number, prot: number): string {
+  const g = targetFor(date);
+  const left = g.meta_kcal - kcal;
+  const pLeft = Math.max(0, g.meta_proteina_g - prot);
+  return `🎯 ${g.tipo_dia}: meta ${fmt(g.meta_kcal)} kcal · ${left >= 0 ? `faltam ${fmt(left)}` : `${fmt(-left)} acima`} kcal · proteína: faltam ${fmt(pLeft)} g`;
+}
+
 const cap = (s: string) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
 const BUTTONS = {
@@ -80,7 +88,7 @@ async function dayReport(chat: string): Promise<void> {
   const date = localDate();
   const meals = await mealsOn(date);
   if (!meals.length) {
-    await tg('sendMessage', { chat_id: chat, text: 'Nenhuma refeição registrada hoje.' });
+    await tg('sendMessage', { chat_id: chat, text: `Nenhuma refeição registrada hoje.\n${goalLine(date, 0, 0)}` });
     return;
   }
   const t = totals(meals);
@@ -88,7 +96,8 @@ async function dayReport(chat: string): Promise<void> {
     `📊 Hoje (${date.slice(8, 10)}/${date.slice(5, 7)})`,
     ...meals.map((m) => `• ${m.time} ${cap(m.tipo)}: ${m.descricao} — ${fmt(m.kcal)} kcal`),
     '',
-    `Total: ${fmt(t.kcal)} kcal · P ${fmt(t.proteina_g)} g · C ${fmt(t.carbo_g)} g · G ${fmt(t.gordura_g)} g`
+    `Total: ${fmt(t.kcal)} kcal · P ${fmt(t.proteina_g)} g · C ${fmt(t.carbo_g)} g · G ${fmt(t.gordura_g)} g`,
+    goalLine(date, t.kcal, t.proteina_g)
   ].join('\n');
   await tg('sendMessage', { chat_id: chat, text });
 }
@@ -188,7 +197,7 @@ async function handleCallback(cb: any): Promise<void> {
     await tg('editMessageReplyMarkup', { chat_id: chat, message_id: cb.message.message_id, reply_markup: { inline_keyboard: [] } });
     await tg('sendMessage', {
       chat_id: chat,
-      text: `✅ Salvo: ${cap(meal.tipo)} ${meal.time} — ${fmt(meal.kcal)} kcal.\nHoje: ${fmt(t.kcal)} kcal · P ${fmt(t.proteina_g)} g em ${t.refeicoes} refeição(ões).`
+      text: `✅ Salvo: ${cap(meal.tipo)} ${meal.time} — ${fmt(meal.kcal)} kcal.\nHoje: ${fmt(t.kcal)} kcal · P ${fmt(t.proteina_g)} g em ${t.refeicoes} refeição(ões).\n${goalLine(meal.date, t.kcal, t.proteina_g)}`
     });
   } else {
     await clearDraft(chat);
