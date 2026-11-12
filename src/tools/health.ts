@@ -36,6 +36,24 @@ export function registerHealthTools(server: McpServer, g: GarminSession): void {
       const scores = dto.sleepScores ?? {};
       const spo2 = raw.wellnessSpO2SleepSummaryDTO ?? {};
 
+      // sleepLevels is the hypnogram: [{startGMT, endGMT, activityLevel}].
+      // Garmin's levels: 0 deep, 1 light, 2 REM, 3 awake. Offsets are minutes
+      // from sleep start so a chart can lay them out without time zones.
+      const startMs: number | undefined = dto.sleepStartTimestampGMT;
+      const gmt = (s: unknown) =>
+        typeof s === 'string' ? Date.parse(s.endsWith('Z') ? s : `${s}Z`) : NaN;
+      const stageName = ['deep', 'light', 'rem', 'awake'];
+      const stages =
+        typeof startMs === 'number'
+          ? (raw.sleepLevels ?? [])
+              .map((l: any) => ({
+                from_min: round((gmt(l.startGMT) - startMs) / 60000),
+                to_min: round((gmt(l.endGMT) - startMs) / 60000),
+                stage: stageName[Math.round(l.activityLevel)] ?? 'unknown'
+              }))
+              .filter((l: any) => Number.isFinite(l.from_min) && l.to_min > l.from_min)
+          : [];
+
       return text(
         compact({
           date: day,
@@ -66,7 +84,8 @@ export function registerHealthTools(server: McpServer, g: GarminSession): void {
           resting_heart_rate_bpm: raw.restingHeartRate ?? dto.restingHeartRate,
           avg_overnight_hrv: raw.avgOvernightHrv,
           avg_spo2_percent: spo2.averageSpo2,
-          lowest_spo2_percent: spo2.lowestSpo2
+          lowest_spo2_percent: spo2.lowestSpo2,
+          stages: stages.length ? stages : undefined
         })
       );
     }
@@ -159,6 +178,8 @@ export function registerHealthTools(server: McpServer, g: GarminSession): void {
           drained: report.drained,
           highest_level: levels.length ? Math.max(...levels) : undefined,
           lowest_level: levels.length ? Math.min(...levels) : undefined,
+          // The last reading of the day is what the watch face shows right now.
+          latest_level: levels.length ? levels[levels.length - 1] : undefined,
           current_level: report.bodyBatteryDynamicFeedbackEvent?.bodyBatteryLevel,
           current_feedback: report.bodyBatteryDynamicFeedbackEvent?.feedbackShortType,
           avg_stress_level: stress?.avgStressLevel,
