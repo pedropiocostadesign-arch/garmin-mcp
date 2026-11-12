@@ -9,6 +9,7 @@ import {
   signJwt,
   takeLoginState
 } from '../../src/oauth';
+import { sessionCookie } from '../../src/dashboard';
 import { Req, Res, esc, html, issuerOf, page, param } from '../_http';
 
 /**
@@ -104,6 +105,18 @@ export default async function handler(req: Req, res: Res) {
   }
 
   const userId = userIdFor(identity);
+
+  // The Performance OS page: sign the browser in and send it there.
+  if (state.intent === 'dashboard') {
+    try {
+      res.setHeader('Set-Cookie', sessionCookie(userId, issuer));
+    } catch {
+      return html(res, 503, page('Not configured', 'JWT_SECRET is not set.'));
+    }
+    res.setHeader('Location', '/dashboard');
+    return res.status(302).end();
+  }
+
   const hasGarmin = Boolean(await loadTokens(userId));
 
   let secret: string;

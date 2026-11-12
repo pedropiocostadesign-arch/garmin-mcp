@@ -1,0 +1,780 @@
+<meta name="dash-one-writer">
+<link rel="stylesheet" href="avatar.css">
+<style>
+#dash-root{--dash-gutter:0}
+.po{--g:#5cb82e;--g-soft:#e7f4dc;--g-dark:#3d8a17;--ink:#111214;--mute:#8b8c92;--line:#ececef;--bg:#e2e2e5;--card:#fff;--warn:#e5484d;--next:#b9bcc6;
+  background:var(--bg);color:var(--ink);font-family:var(--font-anthropic-sans);padding:18px 24px 22px 0;display:grid;grid-template-columns:76px minmax(0,1fr);min-height:100%;border-radius:0}
+.po *{box-sizing:border-box}
+.po-nav{display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:66px}
+.po-nav button{appearance:none;border:0;width:48px;height:48px;border-radius:14px;background:transparent;color:#9a9ba1;cursor:pointer;display:grid;place-items:center}
+.po-nav button.is-on{background:#fff;color:var(--g)}
+.po-nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.po-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:0 0 12px 10px}
+.po-head h1{margin:0;font-weight:400;font-size:28px;letter-spacing:-.01em}
+.po-head p{margin:4px 0 0;color:var(--mute);font-size:14px}
+.po-race{background:#fff;border-radius:999px;padding:8px 16px;font-size:13px;color:var(--mute)}
+.po-race b{color:var(--ink);font-size:20px;font-weight:500;margin:0 3px}
+.po-sec{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.po-sec[hidden]{display:none}
+.po-card{background:var(--card);border-radius:24px;padding:20px 22px;position:relative;min-width:0}
+.po-card h2{margin:0 0 10px;font-size:17px;font-weight:500}
+.po-hint{margin:-6px 0 10px;color:var(--mute);font-size:12px}
+.po-big{font-size:34px;line-height:1.05;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.po-big small{font-size:13px;color:var(--mute);font-weight:400;margin-left:4px}
+.po-sub{color:var(--mute);font-size:12px;margin-top:6px;line-height:1.5}
+.po-sub b{color:var(--ink);font-weight:500}
+.po-pill{display:inline-block;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;background:var(--g-soft);color:var(--g-dark);margin-left:6px;vertical-align:middle}
+.po-bar{height:8px;border-radius:99px;background:#f0f0f2;overflow:hidden;margin-top:8px}
+.po-bar span{display:block;height:100%;border-radius:99px;background:var(--g)}
+/* home */
+.po-hero{grid-column:span 5;display:grid;grid-template-columns:minmax(140px,1fr) minmax(0,1.15fr);gap:16px}
+.po-avatar{background-repeat:no-repeat;background-position:center bottom;background-size:contain;min-height:296px}
+.po-profile{display:flex;flex-direction:column;justify-content:flex-start;gap:12px}
+.po-id h3{margin:6px 0 8px;font-size:19px;font-weight:500}
+.po-id dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 6px;font-size:13px}
+.po-id dt{color:#a6a7ad}.po-id dd{margin:0}
+.po-vo2{padding:16px 16px 14px}
+.po-vo2 h2{margin-bottom:4px}
+.po-cal{grid-column:span 7}
+.po-left{grid-column:span 5;display:grid;gap:16px;align-content:start}
+.po-mid{grid-column:span 3}
+.po-right{grid-column:span 4;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:start}
+.po-right .po-card{padding:16px 16px 14px}
+.po-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:4px}
+.po-day{border-radius:14px;padding:8px 7px;min-height:96px;background:#f6f6f7;font-size:11px}
+.po-day.is-today{background:var(--g-soft);box-shadow:0 0 0 1.5px var(--g) inset}
+.po-day .d{font-weight:600;font-size:12px;text-transform:capitalize}
+.po-day .d span{color:var(--mute);font-weight:400;margin-left:3px}
+.po-it{margin-top:5px;border-radius:8px;padding:4px 6px;line-height:1.25;background:#fff;border-left:3px solid var(--next);word-break:break-word}
+.po-it.done{border-left-color:var(--g)}.po-it.miss{border-left-color:var(--warn)}.po-it.extra{border-left-color:var(--g);color:var(--mute);font-style:italic}
+.po-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin-top:10px}
+.po-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.po-list{list-style:none;margin:0;padding:0}
+.po-list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}
+.po-list li:first-child{border-top:0;padding-top:2px}
+.po-list .m{color:var(--mute);font-size:12px;margin-top:2px}
+.po-list .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:#3a3b40;font-size:12px}
+/* gauges: the dial is SVG, every number is HTML laid over it */
+.po-gw{position:relative;width:100%;max-width:116px;margin:0 auto}
+.po-gw svg{display:block;width:100%;height:auto;overflow:visible}
+.po-gc{position:absolute;left:0;right:0;top:52.4%;transform:translateY(-50%);text-align:center;line-height:1}
+.po-gv{font-size:23px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.po-gu{font-size:10px;color:var(--mute);margin-top:3px}
+.po-gv.sm{font-size:18px}
+.po-glb{position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:13px;font-weight:500;line-height:1.2}
+.po-c{text-align:center}
+.po-r{text-align:right}
+.po-sl-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.po-sl-top .po-sub{margin-top:2px}
+.po-mid-n{font-size:20px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.po-hyp{display:block;width:100%;height:56px;margin-top:8px}
+.po-axis{display:flex;justify-content:space-between;color:var(--mute);font-size:11px;margin-top:5px;font-variant-numeric:tabular-nums}
+.po-keys{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:10.5px;color:var(--mute);margin-top:6px}
+.po-keys i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+.po-split{display:flex;gap:4px;height:10px;margin:12px 0 6px}
+.po-split span{display:block;border-radius:99px;min-width:4px}
+.po-two{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:6px}
+.po-two .n{font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+.po-two .t{color:var(--mute);font-size:12px}
+.po-ing{margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+.po-st{display:grid;grid-template-columns:minmax(104px,116px) minmax(0,1fr);gap:20px;align-items:center}
+.po-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.po-kv .lbl,.po-focus .lbl{color:var(--mute);font-size:12px}
+.po-kv .v{font-size:17px;font-weight:500;margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.po-focus{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.po-frow{display:grid;grid-template-columns:112px minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:12px;margin-top:5px}
+.po-list li.po-vrow{display:grid;grid-template-columns:72px minmax(0,1fr) 46px;gap:10px;align-items:center;padding:6px 0}
+.po-vrow .po-bar{margin-top:0}
+.po-vrow .r{text-align:right}
+.po-frow .po-bar{margin-top:0}
+.po-frow .v{text-align:right;color:#3a3b40;font-variant-numeric:tabular-nums}
+/* chips, chart, table */
+.po-chips{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.po-chip{appearance:none;cursor:pointer;font:inherit;font-size:13px;border-radius:999px;padding:8px 16px;border:0;background:#fff;color:var(--ink)}
+.po-chip.is-on{background:var(--g);color:#fff}
+.po-chart{position:relative;min-height:230px}
+.po-chart svg text{fill:#8b8c92;font-size:11px}
+.po-tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.08);border-radius:10px;padding:6px 9px;font-size:12px;white-space:nowrap;color:var(--ink)}
+.po-tw{overflow-x:auto}
+.po-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.po-table th{text-align:left;font-weight:500;color:var(--mute);font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.po-table td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.po-empty{color:var(--mute);font-size:13px;padding:10px 0}
+.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}.s7{grid-column:span 7}.s8{grid-column:span 8}.s12{grid-column:1/-1}
+.po-macro{margin-top:14px}
+.po-macro .row{display:flex;justify-content:space-between;font-size:13px}
+.po-macro .row span:last-child{color:var(--mute);font-variant-numeric:tabular-nums}
+[data-dash-source-state=refreshing]{opacity:.5}
+@media (max-width:1100px){.po-hero,.po-cal,.po-left,.po-mid,.po-right{grid-column:1/-1}.s3,.s4,.s5{grid-column:span 6}.s7,.s8{grid-column:1/-1}}
+@media (max-width:640px){.po{grid-template-columns:1fr;padding:16px 12px}.po-nav{flex-direction:row;justify-content:center;padding:0 0 12px;order:-1}.po-head{margin-left:0}
+  .po-hero{grid-template-columns:1fr 1.2fr}.po-avatar{min-height:280px}.po-week{grid-template-columns:repeat(4,minmax(0,1fr))}.s3,.s4,.s5,.s6{grid-column:1/-1}.po-right{grid-template-columns:1fr 1fr}}
+</style>
+
+<div class="po">
+  <nav class="po-nav" aria-label="Seções">
+    <button class="is-on" data-tab="home" type="button" aria-label="Home"><svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg></button>
+    <button data-tab="esportes" type="button" aria-label="Esportes"><svg viewBox="0 0 24 24"><rect x="6" y="4.5" width="12" height="16" rx="2"/><path d="M9.5 3.5h5v2.5h-5z"/></svg></button>
+    <button data-tab="alimentacao" type="button" aria-label="Alimentação"><svg viewBox="0 0 24 24"><path d="M5 10h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 11.5h1.5a2.5 2.5 0 0 1 0 5H16M8 4v3M11 4v3M14 4v3"/></svg></button>
+    <button data-tab="metas" type="button" aria-label="Metas"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/></svg></button>
+  </nav>
+
+  <main>
+    <header class="po-head" id="topo">
+      <div>
+        <h1>Performance OS</h1>
+        <p>Seu assistente pessoal de performance e bem-estar.</p>
+      </div>
+      <div class="po-race">Prova-alvo 28/11 · faltam<b data-draw="countdown">—</b>dias</div>
+    </header>
+
+    <!-- HOME -->
+    <section class="po-sec" id="home">
+      <div class="po-hero">
+        <div class="po-avatar" role="img" aria-label="Avatar do Pedro correndo"></div>
+        <div class="po-profile">
+          <div class="po-id">
+            <h3>Pedro Costa</h3>
+            <dl><dt>Idade:</dt><dd>32</dd><dt>Altura:</dt><dd>1,77m</dd><dt>Cidade:</dt><dd>Brasília - DF</dd></dl>
+          </div>
+          <div class="po-card po-vo2" id="vo2">
+            <h2>VO2máx</h2>
+            <div data-draw="g-vo2" data-source="status"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="po-card po-cal" id="calendario">
+        <h2>Calendário de Treinos</h2>
+        <p class="po-hint">Planejado pelo treinador (Treinus → Garmin) × o que o relógio registrou</p>
+        <div class="po-week" data-draw="week" data-source="weekcal"></div>
+        <div class="po-legend"><span><i style="background:#5cb82e"></i>Feito</span><span><i style="background:#e5484d"></i>Não feito</span><span><i style="background:#b9bcc6"></i>A fazer</span><span><i style="background:#e7f4dc"></i>Extra</span></div>
+      </div>
+
+      <div class="po-left">
+        <div class="po-card" id="status-treino">
+          <h2>Status de Treino <span class="po-pill" data-draw="st-status" data-source="status" data-field="training_status" data-row="0">—</span></h2>
+          <div data-draw="g-status" data-source="status"></div>
+        </div>
+        <div class="po-card" id="volume-semana">
+          <h2>Volume da Semana por Esporte</h2>
+          <p class="po-hint">Horas de segunda até hoje</p>
+          <ul class="po-list" data-draw="weekvol" data-source="weekvol"></ul>
+        </div>
+      </div>
+
+      <div class="po-card po-mid" id="ultimos">
+        <h2>Últimos Treinos</h2>
+        <ul class="po-list" data-draw="recent" data-source="activities"></ul>
+      </div>
+
+      <div class="po-right">
+        <div class="po-card" id="card-sono">
+          <h2>Sono de hoje</h2>
+          <div data-draw="g-sleep" data-source="sleep"></div>
+        </div>
+        <div class="po-card" id="card-hrv">
+          <h2>HRV Noturno</h2>
+          <div data-draw="g-hrv" data-source="hrv"></div>
+        </div>
+        <div class="po-card" id="card-bb">
+          <h2>Body Battery</h2>
+          <div data-draw="g-bb" data-source="bb"></div>
+        </div>
+        <div class="po-card" id="card-energia">
+          <h2>Energia de Hoje</h2>
+          <div data-draw="g-energy" data-source="daily"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESPORTES -->
+    <section class="po-sec" id="esportes" hidden>
+      <div class="po-chips" role="group" aria-label="Esporte">
+        <button class="po-chip is-on" data-sport="todos" type="button">Todos</button>
+        <button class="po-chip" data-sport="natacao" type="button">Natação</button>
+        <button class="po-chip" data-sport="bike" type="button">Bike</button>
+        <button class="po-chip" data-sport="corrida" type="button">Corrida</button>
+        <button class="po-chip" data-sport="forca" type="button">Força</button>
+      </div>
+      <div class="po-card s3" id="sp-sessoes"><h2>Sessões · 28 dias</h2><div class="po-big" data-draw="sp-n" data-source="sportstats">—</div></div>
+      <div class="po-card s3" id="sp-horas"><h2>Horas · 28 dias</h2><div class="po-big" data-draw="sp-h" data-source="sportstats">—</div></div>
+      <div class="po-card s3" id="sp-km"><h2>Distância · 28 dias</h2><div class="po-big" data-draw="sp-km" data-source="sportstats">—</div></div>
+      <div class="po-card s3" id="sp-fc"><h2>FC média · 28 dias</h2><div class="po-big" data-draw="sp-fc" data-source="sportstats">—</div></div>
+      <div class="po-card s12" id="sp-grafico">
+        <h2>Horas por semana</h2>
+        <p class="po-hint">Semanas de segunda a domingo, a partir das últimas 50 atividades</p>
+        <div class="po-chart" data-draw="sp-chart" data-source="weekly"></div>
+      </div>
+      <div class="po-card s12" id="sp-lista">
+        <h2>Treinos</h2>
+        <div class="po-tw">
+          <table class="po-table" data-source="activities" data-row-key="activity_id">
+            <thead><tr><th data-field="start_time">Data</th><th data-field="title">Treino</th><th data-field="distance_km">km</th><th data-field="duration">Tempo</th><th data-field="avg_heart_rate_bpm">FC méd.</th><th data-field="calories">kcal</th></tr></thead>
+            <tbody data-draw="sp-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ALIMENTAÇÃO -->
+    <section class="po-sec" id="alimentacao" hidden>
+      <div class="po-card s4" id="nu-kcal">
+        <h2>Ingeridas hoje <span class="po-pill" data-draw="nu-tipo" data-source="nutri" data-field="tipo_dia">—</span></h2>
+        <div class="po-big"><span data-draw="nu-cal" data-source="nutri" data-field="calorias">—</span><small>de <span data-draw="nu-meta" data-source="nutri" data-field="meta_kcal">—</span> kcal</small></div>
+        <div class="po-bar"><span data-draw="nu-bar" style="width:0"></span></div>
+        <div class="po-sub" data-draw="nu-left" data-source="nutri">—</div>
+      </div>
+      <div class="po-card s4" id="nu-macros">
+        <h2>Macros de hoje</h2>
+        <div class="po-macro"><div class="row"><span>Proteína</span><span data-draw="mac-p" data-source="nutri">—</span></div><div class="po-bar"><span data-draw="bar-p" style="width:0"></span></div></div>
+        <div class="po-macro"><div class="row"><span>Carboidrato</span><span data-draw="mac-c" data-source="nutri">—</span></div><div class="po-bar"><span data-draw="bar-c" style="width:0"></span></div></div>
+        <div class="po-macro"><div class="row"><span>Gordura</span><span data-draw="mac-g" data-source="nutri">—</span></div><div class="po-bar"><span data-draw="bar-g" style="width:0"></span></div></div>
+      </div>
+      <div class="po-card s4" id="nu-saldo">
+        <h2>Saldo do dia</h2>
+        <div class="po-big"><span data-draw="nu-saldo" data-source="balance" data-field="saldo" data-row="0">—</span><small>kcal</small></div>
+        <div class="po-sub">Gasto Garmin <b data-draw="nu-gasto" data-source="daily" data-field="total_calories" data-row="0">—</b> kcal até agora</div>
+      </div>
+      <div class="po-card s7" id="nu-semana">
+        <h2>Últimos 7 dias</h2>
+        <p class="po-hint">Calorias ingeridas × meta do dia</p>
+        <div class="po-chart" data-draw="nu-chart" data-source="nutri"></div>
+      </div>
+      <div class="po-card s5" id="diario">
+        <h2>Diário de hoje</h2>
+        <p class="po-hint">Foto, áudio ou texto no bot Nutri Pedro (Telegram) → confirme → entra aqui</p>
+        <ul class="po-list" data-draw="meals" data-source="meals"></ul>
+      </div>
+    </section>
+
+    <!-- METAS -->
+    <section class="po-sec" id="metas" hidden>
+      <div class="po-card s4" id="meta-prova">
+        <h2>Prova-alvo</h2>
+        <div class="po-big"><span data-draw="countdown2">—</span><small>dias</small></div>
+        <div class="po-sub">Triathlon olímpico · 28/11<br>1,5 km natação · 40 km bike · 10 km corrida</div>
+      </div>
+      <div class="po-card s4" id="meta-peso">
+        <h2>Peso</h2>
+        <div class="po-big">82 → 78<small>kg</small></div>
+        <div class="po-sub">Déficit de ~500 kcal/dia · ritmo de 0,3–0,5 kg por semana<br>Pesagem semanal na YUNMAI, em jejum</div>
+      </div>
+      <div class="po-card s4" id="meta-hoje">
+        <h2>Meta de hoje</h2>
+        <div class="po-big"><span data-draw="mt-kcal" data-source="nutri" data-field="meta_kcal">—</span><small>kcal</small></div>
+        <div class="po-sub" data-draw="mt-tipo" data-source="nutri">—</div>
+      </div>
+      <div class="po-card s12" id="meta-plano">
+        <h2>Plano semanal de alimentação</h2>
+        <div class="po-tw">
+          <table class="po-table">
+            <thead><tr><th>Dia</th><th>Treino</th><th>Calorias</th><th>Proteína</th><th>Carbo</th><th>Gordura</th></tr></thead>
+            <tbody>
+              <tr><td>Seg–Qui</td><td>Duplo (corrida + força / bike + natação)</td><td>2.600 kcal</td><td>165 g</td><td>~330 g</td><td>~70 g</td></tr>
+              <tr><td>Sexta</td><td>Corrida regenerativa</td><td>2.350 kcal</td><td>165 g</td><td>~270 g</td><td>~70 g</td></tr>
+              <tr><td>Sábado</td><td>Bike longo ou duathlon</td><td>3.000 kcal</td><td>165 g</td><td>~430 g</td><td>~70 g</td></tr>
+              <tr><td>Domingo</td><td>Day off</td><td>1.950 kcal</td><td>165 g</td><td>~165 g</td><td>~70 g</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="po-sub">Géis e bebida de treino entram na conta. Se em 2 semanas a balança não cair 0,6–1 kg, reduzir 150 kcal/dia; se cair rápido e o treino piorar, somar 150.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+window.TP = (function () {
+  const RACE = '2026-11-28';
+  const tz = 'America/Sao_Paulo';
+  const localISO = (d) => new Intl.DateTimeFormat('en-CA', {timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit'}).format(d || new Date());
+  const sportOf = (s) => {
+    s = String(s || '').toLowerCase();
+    if (/swim|nata/.test(s)) return 'natacao';
+    if (/cycl|bik|ride|ciclis|pedal/.test(s)) return 'bike';
+    if (/run|corrid|trail|track/.test(s)) return 'corrida';
+    if (/strength|for[cç]a|funcional|muscul/.test(s)) return 'forca';
+    if (/duath|duat|brick|transi/.test(s)) return 'duathlon';
+    return 'outro';
+  };
+  const names = {natacao: 'Natação', bike: 'Bike', corrida: 'Corrida', forca: 'Força', duathlon: 'Duathlon', outro: 'Outro', todos: 'Todos'};
+  const fmt = (n, d = 0) => (n == null || n === '' || isNaN(+n)) ? '—' : (+n).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+  const row0 = (id) => { const r = dash.data(id); return r.status === 'ok' && r.data && r.data[0] ? r.data[0] : null; };
+  const today = (id) => { const r = dash.data(id); if (r.status !== 'ok' || !Array.isArray(r.data) || !r.data.length) return null; const t = localISO(); const i = r.data.findIndex((x) => x.date === t); const k = i >= 0 ? i : r.data.length - 1; return {row: r.data[k], i: k}; };
+  const pt = {POOR: 'Ruim', FAIR: 'Razoável', GOOD: 'Bom', EXCELLENT: 'Excelente', BALANCED: 'Equilibrado', UNBALANCED: 'Desequilibrado', LOW: 'Baixo', NONE: 'Calibrando'};
+  const status = {Productive: 'Produtivo', Unproductive: 'Improdutivo', Maintaining: 'Mantendo', Recovery: 'Recuperação', Peaking: 'Pico', Overreaching: 'Sobrecarga', Detraining: 'Destreino', Strained: 'Sob tensão', 'No Status': 'Sem status'};
+  const balance = {AEROBIC_LOW_SHORTAGE: 'Falta volume aeróbico leve (Z1–Z2)', AEROBIC_HIGH_SHORTAGE: 'Falta volume aeróbico intenso', ANAEROBIC_SHORTAGE: 'Falta estímulo anaeróbico', BALANCED: 'Distribuição de carga equilibrada'};
+  return {RACE, localISO, sportOf, names, fmt, row0, today, pt, status, balance, sport: 'todos'};
+})();
+
+dash.loader('sleep', {
+  description: 'Registro único do sono; o hipnograma (fases minuto a minuto) vira texto JSON numa coluna.',
+  fn: ({answer}) => { if (!answer || typeof answer !== 'object' || Array.isArray(answer)) return []; const {stages, ...rest} = answer; return [{...rest, stages: JSON.stringify(stages || [])}]; }
+});
+['hrv', 'daily', 'status'].forEach((id) => dash.loader(id, {
+  description: 'A resposta da Garmin é um único registro; vira uma linha.',
+  fn: ({answer}) => (answer && typeof answer === 'object' && !Array.isArray(answer)) ? [answer] : []
+}));
+dash.loader('bb', {
+  description: 'Registro único do Body Battery, sem a lista de eventos.',
+  fn: ({answer}) => { if (!answer || typeof answer !== 'object') return []; const {events, ...rest} = answer; return [rest]; }
+});
+dash.loader('plan', {
+  description: 'Só os treinos agendados no calendário Garmin (vindos do Treinus).',
+  fn: ({answer}) => ({columns: ['date', 'title'], rows: (answer && answer.scheduled_workouts || []).map((w) => ({date: w.date, title: w.title}))})
+});
+dash.loader('nutri', {
+  description: 'Totais diários do bot com a meta do dia; renomeia kcal para calorias.',
+  fn: ({answer}) => ({columns: ['date', 'tipo_dia', 'calorias', 'meta_kcal', 'proteina_g', 'meta_proteina_g', 'carbo_g', 'meta_carbo_g', 'gordura_g', 'meta_gordura_g', 'refeicoes'],
+    rows: (Array.isArray(answer) ? answer : []).map((r) => ({date: r.date, tipo_dia: r.tipo_dia, calorias: r.kcal, meta_kcal: r.meta_kcal, proteina_g: r.proteina_g, meta_proteina_g: r.meta_proteina_g, carbo_g: r.carbo_g, meta_carbo_g: r.meta_carbo_g, gordura_g: r.gordura_g, meta_gordura_g: r.meta_gordura_g, refeicoes: r.refeicoes}))})
+});
+dash.loader('meals', {
+  description: 'Uma linha por refeição confirmada hoje no bot.',
+  fn: ({answer}) => ({columns: ['id', 'refeicao', 'kcal', 'proteina_g'], rows: (Array.isArray(answer) ? answer : []).map((m) => ({id: m.id, refeicao: m.time + ' · ' + m.tipo + ' — ' + m.descricao, kcal: m.kcal, proteina_g: m.proteina_g}))})
+});
+
+dash.calc('weekcal', {
+  title: 'Planejado × feito', description: 'Cruza os treinos agendados com as atividades registradas, dia a dia, nesta semana e na próxima.',
+  inputs: ['plan', 'activities'],
+  fn: (plan, activities) => {
+    const iso = (d) => new Intl.DateTimeFormat('en-CA', {timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'}).format(d);
+    const sportOf = (s) => { s = String(s || '').toLowerCase(); if (/swim|nata/.test(s)) return 'natacao'; if (/cycl|bik|ride|ciclis/.test(s)) return 'bike'; if (/run|corrid|trail/.test(s)) return 'corrida'; if (/strength|for[cç]a|funcional/.test(s)) return 'forca'; if (/duath|duat/.test(s)) return 'duathlon'; return 'outro'; };
+    const today = iso(new Date());
+    const t = new Date(today + 'T12:00:00Z');
+    const monday = new Date(t); monday.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7));
+    const rows = [];
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(monday); d.setUTCDate(monday.getUTCDate() + i);
+      const date = d.toISOString().slice(0, 10);
+      const planned = plan.filter((p) => p.date === date);
+      const done = activities.filter((a) => String(a.start_time || '').slice(0, 10) === date);
+      const used = new Set();
+      const items = planned.map((p) => {
+        const sp = sportOf(p.title);
+        const idx = done.findIndex((a, j) => !used.has(j) && (sportOf(a.sport) === sp || (sp === 'duathlon' && /corrida|bike/.test(sportOf(a.sport)))));
+        if (idx >= 0) used.add(idx);
+        return {title: p.title, state: idx >= 0 ? 'done' : (date < today ? 'miss' : 'next')};
+      });
+      done.forEach((a, j) => { if (!used.has(j)) items.push({title: a.title, state: 'extra'}); });
+      rows.push({date, today: date === today, itens: JSON.stringify(items), planejados: planned.length, feitos: items.filter((x) => x.state === 'done').length});
+    }
+    return rows;
+  }
+});
+dash.calc('weekvol', {
+  title: 'Horas na semana por esporte', description: 'Soma a duração das atividades desde segunda-feira, por esporte.',
+  inputs: ['activities'],
+  fn: (activities) => {
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date());
+    const t = new Date(today + 'T12:00:00Z'); t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7));
+    const monday = t.toISOString().slice(0, 10);
+    const sportOf = (s) => { s = String(s || '').toLowerCase(); if (/swim/.test(s)) return 'Natação'; if (/cycl|bik|ride/.test(s)) return 'Bike'; if (/run|trail/.test(s)) return 'Corrida'; if (/strength/.test(s)) return 'Força'; return 'Outro'; };
+    const mins = (x) => { const p = String(x || '').split(':').map(Number); return p.length === 3 ? p[0] * 60 + p[1] + p[2] / 60 : (p[0] || 0) + (p[1] || 0) / 60; };
+    const acc = {Natação: 0, Bike: 0, Corrida: 0, Força: 0};
+    activities.filter((a) => String(a.start_time).slice(0, 10) >= monday).forEach((a) => { const k = sportOf(a.sport); acc[k] = (acc[k] || 0) + mins(a.duration); });
+    return Object.entries(acc).map(([esporte, m]) => ({esporte, horas: Math.round(m / 6) / 10}));
+  }
+});
+dash.calc('sportstats', {
+  title: 'Resumo por esporte (28 dias)', description: 'Sessões, horas, km e FC média dos últimos 28 dias, por esporte e no total.',
+  inputs: ['activities'],
+  fn: (activities) => {
+    const since = new Date(Date.now() - 28 * 864e5).toISOString().slice(0, 10);
+    const sportOf = (s) => { s = String(s || '').toLowerCase(); if (/swim/.test(s)) return 'natacao'; if (/cycl|bik|ride/.test(s)) return 'bike'; if (/run|trail/.test(s)) return 'corrida'; if (/strength/.test(s)) return 'forca'; return 'outro'; };
+    const mins = (x) => { const p = String(x || '').split(':').map(Number); return p.length === 3 ? p[0] * 60 + p[1] + p[2] / 60 : (p[0] || 0) + (p[1] || 0) / 60; };
+    const recent = activities.filter((a) => String(a.start_time).slice(0, 10) >= since);
+    return ['todos', 'natacao', 'bike', 'corrida', 'forca'].map((esporte) => {
+      const xs = recent.filter((a) => esporte === 'todos' || sportOf(a.sport) === esporte);
+      const hr = xs.filter((a) => +a.avg_heart_rate_bpm > 0);
+      return {esporte, sessoes: xs.length, horas: Math.round(xs.reduce((s, a) => s + mins(a.duration), 0) / 6) / 10, km: Math.round(xs.reduce((s, a) => s + (+a.distance_km || 0), 0) * 10) / 10, fc_media: hr.length ? Math.round(hr.reduce((s, a) => s + +a.avg_heart_rate_bpm, 0) / hr.length) : null};
+    });
+  }
+});
+dash.calc('weekly', {
+  title: 'Horas por semana e esporte', description: 'Duração somada por semana (segunda a domingo) e por esporte.',
+  inputs: ['activities'],
+  fn: (activities) => {
+    const sportOf = (s) => { s = String(s || '').toLowerCase(); if (/swim/.test(s)) return 'natacao'; if (/cycl|bik|ride/.test(s)) return 'bike'; if (/run|trail/.test(s)) return 'corrida'; if (/strength/.test(s)) return 'forca'; return 'outro'; };
+    const mins = (x) => { const p = String(x || '').split(':').map(Number); return p.length === 3 ? p[0] * 60 + p[1] + p[2] / 60 : (p[0] || 0) + (p[1] || 0) / 60; };
+    const acc = {};
+    activities.forEach((a) => {
+      const d = new Date(String(a.start_time).slice(0, 10) + 'T12:00:00Z'); if (isNaN(d)) return;
+      d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+      const semana = d.toISOString().slice(0, 10), esporte = sportOf(a.sport), k = semana + '|' + esporte;
+      acc[k] = acc[k] || {semana, esporte, horas: 0}; acc[k].horas += mins(a.duration) / 60;
+    });
+    return Object.values(acc).map((r) => ({...r, horas: Math.round(r.horas * 10) / 10})).sort((a, b) => a.semana.localeCompare(b.semana));
+  }
+});
+dash.calc('balance', {
+  title: 'Saldo calórico de hoje', description: 'Calorias ingeridas hoje (bot) menos o gasto total do dia até agora (Garmin).',
+  inputs: ['nutri', 'daily'],
+  fn: (nutri, daily) => {
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date());
+    const n = nutri.find((r) => r.date === today) || nutri[nutri.length - 1];
+    const ing = n ? +n.calorias || 0 : null, gasto = daily[0] ? +daily[0].total_calories || 0 : null;
+    return [{ingeridas: ing, gasto, saldo: ing == null || gasto == null ? null : ing - gasto}];
+  }
+});
+</script>
+
+<script>
+(function () {
+  const tabs = document.querySelectorAll('.po-nav button');
+  const show = (name) => {
+    tabs.forEach((b) => b.classList.toggle('is-on', b.dataset.tab === name));
+    ['home', 'esportes', 'alimentacao', 'metas'].forEach((id) => { const s = document.getElementById(id); if (s) s.hidden = id !== name; });
+    dash.setLink(name === 'home' ? null : name);
+  };
+  tabs.forEach((b) => b.addEventListener('click', () => show(b.dataset.tab)));
+  const h = (location.hash || '').slice(1);
+  if (['esportes', 'alimentacao', 'metas'].includes(h)) show(h);
+  document.querySelectorAll('.po-chip').forEach((c) => c.addEventListener('click', () => {
+    TP.sport = c.dataset.sport;
+    document.querySelectorAll('.po-chip').forEach((x) => x.classList.toggle('is-on', x === c));
+    ['sp-n', 'sp-h', 'sp-km', 'sp-fc', 'sp-chart', 'sp-rows'].forEach((n) => dash.draw(n));
+  }));
+})();
+</script>
+
+<script>
+const days = () => { const a = new Date(TP.localISO() + 'T12:00:00Z'), b = new Date(TP.RACE + 'T12:00:00Z'); return String(Math.max(0, Math.round((b - a) / 864e5))); };
+dash.draw('countdown', (el) => { el.textContent = days(); });
+dash.draw('countdown2', (el) => { el.textContent = days(); });
+const kv = (name, id, field, map, digits) => dash.draw(name, (el) => {
+  const r = TP.row0(id);
+  if (!r || r[field] == null) { el.textContent = '—'; return; }
+  const v = r[field];
+  el.textContent = map ? (map[v] || v) : (typeof v === 'number' ? TP.fmt(v, digits || 0) : v);
+});
+kv('st-status', 'status', 'training_status', TP.status);
+kv('nu-gasto', 'daily', 'total_calories'); kv('nu-saldo', 'balance', 'saldo');
+
+// today's nutrition row, marked by its row number
+const nv = (name, field, digits) => dash.draw(name, (el) => {
+  const t = TP.today('nutri');
+  if (!t || t.row[field] == null) { el.textContent = '—'; return; }
+  el.setAttribute('data-row', String(t.i));
+  el.textContent = typeof t.row[field] === 'number' ? TP.fmt(t.row[field], digits || 0) : t.row[field];
+});
+nv('nu-cal', 'calorias'); nv('nu-meta', 'meta_kcal'); nv('nu-tipo', 'tipo_dia'); nv('mt-kcal', 'meta_kcal');
+const pct = (a, b) => (b ? Math.min(100, (a || 0) / b * 100) : 0) + '%';
+dash.draw('nu-bar', (el) => { const t = TP.today('nutri'); el.style.width = t ? pct(t.row.calorias, t.row.meta_kcal) : '0'; });
+[['p', 'proteina_g', 'meta_proteina_g'], ['c', 'carbo_g', 'meta_carbo_g'], ['g', 'gordura_g', 'meta_gordura_g']].forEach(([k, f, m]) => {
+  dash.draw('mac-' + k, (el) => { const t = TP.today('nutri'); el.textContent = t ? TP.fmt(t.row[f]) + ' / ' + TP.fmt(t.row[m]) + ' g' : '—'; });
+  dash.draw('bar-' + k, (el) => { const t = TP.today('nutri'); el.style.width = t ? pct(t.row[f], t.row[m]) : '0'; });
+});
+dash.draw('nu-left', (el) => {
+  const t = TP.today('nutri');
+  if (!t) { el.textContent = '—'; return; }
+  const left = (t.row.meta_kcal || 0) - (t.row.calorias || 0);
+  el.textContent = left >= 0 ? 'Faltam ' + TP.fmt(left) + ' kcal para a meta de hoje' : TP.fmt(-left) + ' kcal acima da meta de hoje';
+});
+dash.draw('mt-tipo', (el) => { const t = TP.today('nutri'); el.textContent = t ? t.row.tipo_dia + ' · proteína ' + TP.fmt(t.row.meta_proteina_g) + ' g · carbo ~' + TP.fmt(t.row.meta_carbo_g) + ' g' : '—'; });
+
+dash.draw('week', (el) => {
+  const r = dash.data('weekcal');
+  if (r.status !== 'ok' || !Array.isArray(r.data)) { el.replaceChildren(); return; }
+  const wd = ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'];
+  el.replaceChildren(...r.data.map((d, i) => {
+    const box = document.createElement('div');
+    box.className = 'po-day' + (d.today ? ' is-today' : '');
+    const h = document.createElement('div'); h.className = 'd';
+    h.textContent = wd[i % 7]; const s = document.createElement('span'); s.textContent = d.date.slice(8, 10) + '/' + d.date.slice(5, 7); h.append(s);
+    box.append(h);
+    JSON.parse(d.itens || '[]').forEach((it) => {
+      const x = document.createElement('div'); x.className = 'po-it ' + it.state;
+      x.textContent = String(it.title || '').replace(/\s+(seg|ter|qua|qui|sex|s[aá]b|dom)\s+\d{2}\/\d{2}$/i, '').replace(/^.*? - /, '');
+      box.append(x);
+    });
+    return box;
+  }));
+});
+
+dash.draw('recent', (el) => {
+  const r = dash.data('activities');
+  if (r.status !== 'ok') { el.replaceChildren(); return; }
+  el.replaceChildren(...r.data.slice(0, 8).map((a) => {
+    const li = document.createElement('li');
+    const l = document.createElement('div'); const t = document.createElement('div'); t.textContent = String(a.title || '').replace(/^.*? - /, '');
+    const m = document.createElement('div'); m.className = 'm'; m.textContent = TP.names[TP.sportOf(a.sport)] + ' · ' + String(a.start_time || '').slice(8, 10) + '/' + String(a.start_time || '').slice(5, 7);
+    l.append(t, m);
+    const rr = document.createElement('div'); rr.className = 'r';
+    const km = +a.distance_km > 0 ? TP.fmt(a.distance_km, 1) + ' km' : '';
+    rr.textContent = [km, a.duration, a.avg_heart_rate_bpm ? a.avg_heart_rate_bpm + ' bpm' : ''].filter(Boolean).join('\n');
+    rr.style.whiteSpace = 'pre-line';
+    li.append(l, rr); return li;
+  }));
+});
+
+dash.draw('weekvol', (el) => {
+  const r = dash.data('weekvol');
+  if (r.status !== 'ok' || !Array.isArray(r.data)) { el.replaceChildren(); return; }
+  const max = Math.max(1, ...r.data.map((x) => x.horas));
+  el.replaceChildren(...r.data.map((x) => {
+    const li = document.createElement('li'); li.className = 'po-vrow';
+    const n = document.createElement('span'); n.textContent = x.esporte;
+    const bar = document.createElement('div'); bar.className = 'po-bar'; const fill = document.createElement('span'); fill.style.width = (x.horas / max * 100) + '%'; bar.append(fill);
+    const v = document.createElement('span'); v.className = 'r';
+    v.setAttribute('data-source', 'weekvol'); v.setAttribute('data-field', 'horas'); v.setAttribute('data-where', 'esporte=' + encodeURIComponent(x.esporte));
+    v.textContent = TP.fmt(x.horas, 1) + ' h';
+    li.append(n, bar, v); return li;
+  }));
+});
+</script>
+
+<script>
+const spRow = () => { const r = dash.data('sportstats'); return r.status === 'ok' && Array.isArray(r.data) ? r.data.find((x) => x.esporte === TP.sport) : null; };
+const spKpi = (name, field, unit, digits) => dash.draw(name, (el) => {
+  const x = spRow();
+  el.setAttribute('data-field', field); el.setAttribute('data-where', 'esporte=' + TP.sport);
+  if (!x || x[field] == null) { el.textContent = '—'; return; }
+  el.textContent = TP.fmt(x[field], digits || 0) + (unit ? ' ' + unit : '');
+});
+spKpi('sp-n', 'sessoes'); spKpi('sp-h', 'horas', 'h', 1); spKpi('sp-km', 'km', 'km', 1); spKpi('sp-fc', 'fc_media', 'bpm');
+
+const barChart = (el, data, label, tipText, refFn) => {
+  const W = el.clientWidth || 320, H = 230, m = {t: 20, r: 8, b: 26, l: 40};
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', label);
+  const x = d3.scaleBand().domain(data.map((d) => d.k)).range([m.l, W - m.r]).padding(0.35);
+  const top = d3.max(data, (d) => Math.max(d.v, d.ref || 0)) * 1.15 || 1;
+  const y = d3.scaleLinear().domain([0, top]).nice().range([H - m.b, m.t]);
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(W - m.l - m.r)).tickFormat((d) => TP.fmt(d, d % 1 ? 1 : 0))).call((g) => { g.select('.domain').remove(); g.selectAll('line').style('stroke', '#efeff1'); });
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickSize(0).tickFormat((d) => d.slice(8, 10) + '/' + d.slice(5, 7))).call((g) => g.select('.domain').remove()).selectAll('text').attr('dy', '1.2em');
+  const tip = document.createElement('div'); tip.className = 'po-tip'; tip.hidden = true; el.append(tip);
+  svg.selectAll('rect.b').data(data).join('rect').attr('class', 'b').attr('x', (d) => x(d.k)).attr('width', x.bandwidth()).attr('y', (d) => y(d.v)).attr('height', (d) => y(0) - y(d.v)).attr('rx', 7).style('fill', '#5cb82e')
+    .on('pointerenter pointermove', (ev, d) => { tip.hidden = false; tip.textContent = tipText(d); const [px, py] = d3.pointer(ev, el); tip.style.left = Math.min(px + 10, W - 170) + 'px'; tip.style.top = Math.max(py - 30, 0) + 'px'; })
+    .on('pointerleave', () => { tip.hidden = true; });
+  if (refFn) svg.selectAll('line.ref').data(data.filter((d) => d.ref)).join('line').attr('class', 'ref').attr('x1', (d) => x(d.k) - 3).attr('x2', (d) => x(d.k) + x.bandwidth() + 3).attr('y1', (d) => y(d.ref)).attr('y2', (d) => y(d.ref)).style('stroke', '#111214').style('stroke-width', 2).style('stroke-dasharray', '3 3');
+  svg.selectAll('text.v').data(data).join('text').attr('class', 'v').attr('x', (d) => x(d.k) + x.bandwidth() / 2).attr('y', (d) => y(Math.max(d.v, d.ref || 0)) - 6).attr('text-anchor', 'middle').text((d) => refFn ? TP.fmt(d.v) : TP.fmt(d.v, 1));
+};
+
+dash.draw('sp-chart', (el) => {
+  const r = dash.data('weekly');
+  el.replaceChildren();
+  if (r.status !== 'ok' || !Array.isArray(r.data)) { if (r.status === 'error') { const p = document.createElement('div'); p.className = 'po-empty'; p.textContent = 'Falha ao carregar'; el.append(p); } return; }
+  const by = d3.rollup(r.data.filter((x) => TP.sport === 'todos' || x.esporte === TP.sport), (v) => d3.sum(v, (x) => x.horas), (x) => x.semana);
+  const data = Array.from(by, ([k, v]) => ({k, v: Math.round(v * 10) / 10})).sort((a, b) => a.k.localeCompare(b.k)).slice(-8);
+  if (!data.length) { const p = document.createElement('div'); p.className = 'po-empty'; p.textContent = 'Sem treinos desse esporte no período.'; el.append(p); return; }
+  barChart(el, data, 'Horas de treino por semana — ' + TP.names[TP.sport], (d) => 'Semana de ' + d.k.slice(8, 10) + '/' + d.k.slice(5, 7) + ': ' + TP.fmt(d.v, 1) + ' h');
+});
+
+dash.draw('nu-chart', (el) => {
+  const r = dash.data('nutri');
+  el.replaceChildren();
+  if (r.status !== 'ok' || !Array.isArray(r.data)) return;
+  const data = r.data.map((x) => ({k: x.date, v: +x.calorias || 0, ref: +x.meta_kcal || 0}));
+  barChart(el, data, 'Calorias ingeridas por dia nos últimos 7 dias, com a meta tracejada', (d) => d.k.slice(8, 10) + '/' + d.k.slice(5, 7) + ': ' + TP.fmt(d.v) + ' de ' + TP.fmt(d.ref) + ' kcal', true);
+});
+
+dash.draw('sp-rows', (el) => {
+  const r = dash.data('activities');
+  if (r.status !== 'ok') { el.replaceChildren(); return; }
+  const rows = r.data.filter((a) => TP.sport === 'todos' || TP.sportOf(a.sport) === TP.sport);
+  el.replaceChildren(...rows.map((a) => {
+    const tr = document.createElement('tr'); tr.setAttribute('data-key', String(a.activity_id));
+    [String(a.start_time || '').slice(8, 10) + '/' + String(a.start_time || '').slice(5, 7), String(a.title || '').replace(/^.*? - /, ''), +a.distance_km > 0 ? TP.fmt(a.distance_km, 1) : '—', a.duration || '—', a.avg_heart_rate_bpm || '—', a.calories || '—']
+      .forEach((c) => { const td = document.createElement('td'); td.textContent = c; tr.append(td); });
+    return tr;
+  }));
+});
+
+dash.draw('meals', (el) => {
+  const r = dash.data('meals');
+  if (r.status !== 'ok') { el.replaceChildren(); return; }
+  if (!r.data.length) { const li = document.createElement('li'); li.className = 'po-empty'; li.textContent = 'Nenhuma refeição registrada hoje.'; el.replaceChildren(li); return; }
+  el.replaceChildren(...r.data.map((m, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('div'); a.textContent = m.refeicao;
+    const b = document.createElement('div'); b.className = 'r'; b.setAttribute('data-source', 'meals'); b.setAttribute('data-field', 'kcal'); b.setAttribute('data-row', String(i));
+    b.textContent = m.kcal != null ? TP.fmt(m.kcal) + ' kcal' : '';
+    li.append(a, b); return li;
+  }));
+});
+</script>
+
+<script>
+// Garmin-style dials. Only the arcs are SVG, with their look set inline so no
+// outside stylesheet can thin, recolour or rasterise them; the numbers are
+// HTML laid over the dial, so they render as crisp page text at any size.
+window.PG = (() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const pt = (r, a) => [70 + r * Math.sin(a * Math.PI / 180), 66 - r * Math.cos(a * Math.PI / 180)];
+  const arcD = (r, a0, a1) => { const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1); return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${a1 - a0 > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+  const A0 = -135, A1 = 135, R = 54, W = 10;
+  const lin = (v, min, max) => A0 + (A1 - A0) * Math.max(0, Math.min(1, (v - min) / (max - min)));
+  const stroke = (color, cap, w) => `fill:none;stroke:${color};stroke-width:${w || W}px;stroke-linecap:${cap || 'round'};shape-rendering:geometricPrecision;vector-effect:none`;
+  const path = (svg, a0, a1, color, cap, w) => svg.append(el('path', {d: arcD(R, a0, a1), style: stroke(color, cap, w)}));
+  const div = (cls, txt, mark) => { const d = document.createElement('div'); if (cls) d.className = cls; if (txt != null) d.textContent = txt; if (mark) for (const k in mark) d.setAttribute(k, mark[k]); return d; };
+  const shell = (o) => {
+    const wrap = div('po-gw', null, {role: 'img', 'aria-label': o.aria});
+    const svg = el('svg', {viewBox: '0 0 140 126', width: '140', height: '126', 'aria-hidden': 'true', focusable: 'false', style: 'display:block;width:100%;height:auto;overflow:visible;shape-rendering:geometricPrecision'});
+    const c = div('po-gc'); c.append(div(String(o.text).length > 4 ? 'po-gv sm' : 'po-gv', o.text, o.mark)); if (o.unit) c.append(div('po-gu', o.unit));
+    wrap.append(svg, c);
+    if (o.label) wrap.append(div('po-glb', o.label));
+    return {wrap, svg};
+  };
+  // segs: [{from, to, color}]; equal gives every band the same angle, as Garmin's VO2 dial does
+  const segGauge = (o) => {
+    const {wrap, svg} = shell(o);
+    const n = o.segs.length, gap = 4, lo = o.segs[0].from, hi = o.segs[n - 1].to;
+    const bandAng = (i, v) => o.equal ? A0 + (A1 - A0) / n * (i + Math.max(0, Math.min(1, (v - o.segs[i].from) / (o.segs[i].to - o.segs[i].from)))) : lin(v, lo, hi);
+    o.segs.forEach((s, i) => {
+      const a0 = o.equal ? A0 + (A1 - A0) / n * i : lin(s.from, lo, hi);
+      const a1 = o.equal ? A0 + (A1 - A0) / n * (i + 1) : lin(s.to, lo, hi);
+      path(svg, a0 + (i ? gap / 2 : 0), a1 - (i < n - 1 ? gap / 2 : 0), s.color, i === 0 || i === n - 1 ? 'round' : 'butt');
+    });
+    if (o.value != null) {
+      let i = o.segs.findIndex((s) => o.value < s.to); if (i < 0) i = n - 1;
+      const [x, y] = pt(R, bandAng(i, o.value));
+      svg.append(el('circle', {cx: x.toFixed(2), cy: y.toFixed(2), r: '8.5', style: `fill:${o.segs[i].color};stroke:#fff;stroke-width:3.5px`}));
+    }
+    return wrap;
+  };
+  const fillGauge = (o) => {
+    const {wrap, svg} = shell(o);
+    path(svg, A0, A1, '#ededf0');
+    if (o.band) path(svg, lin(o.band[0], o.min, o.max), lin(o.band[1], o.min, o.max), '#d5edc4');
+    if (o.value != null && o.value > o.min) path(svg, A0, lin(o.value, o.min, o.max), '#5cb82e');
+    if (o.tick != null) {
+      const a = lin(o.tick, o.min, o.max), [x0, y0] = pt(R - 9, a), [x1, y1] = pt(R + 9, a);
+      svg.append(el('line', {x1: x0.toFixed(2), y1: y0.toFixed(2), x2: x1.toFixed(2), y2: y1.toFixed(2), style: 'stroke:#111214;stroke-width:2.5px;stroke-linecap:round'}));
+    }
+    return wrap;
+  };
+  const hm = (h) => { const m = Math.round((+h || 0) * 60); return Math.floor(m / 60) + 'h ' + String(m % 60).padStart(2, '0') + 'm'; };
+  return {el, div, segGauge, fillGauge, hm};
+})();
+
+(() => {
+  const {div, hm} = PG;
+  const empty = (el) => el.replaceChildren(div('po-empty', 'Sem dados de hoje'));
+  const mk = (src, field) => ({'data-source': src, 'data-field': field, 'data-row': '0'});
+
+  // VO2 max: Garmin's bands for men by age bracket (where Fair, Good, Excellent, Superior start)
+  const VO2_BANDS = {20: [41.7, 45.4, 51.1, 55.4], 30: [40.5, 44.0, 48.3, 54.0], 40: [38.5, 42.4, 46.4, 52.5], 50: [35.6, 39.2, 43.4, 48.9], 60: [32.3, 35.5, 39.5, 45.7]};
+  dash.draw('g-vo2', (el) => {
+    const r = TP.row0('status');
+    if (!r || r.vo2_max_running == null) { empty(el); return; }
+    const age = +r.chronological_age || 35, key = Math.max(20, Math.min(60, Math.floor(age / 10) * 10));
+    const [f, g, e, s] = VO2_BANDS[key];
+    const segs = [
+      {from: f - 8, to: f, color: '#e5484d', name: 'Ruim'},
+      {from: f, to: g, color: '#f08c2e', name: 'Razoável'},
+      {from: g, to: e, color: '#a9dc8a', name: 'Bom'},
+      {from: e, to: s, color: '#5cb82e', name: 'Excelente'},
+      {from: s, to: s + 6, color: '#2f6e12', name: 'Superior'}
+    ];
+    const v = +r.vo2_max_running, band = segs.find((x) => v < x.to) || segs[4];
+    el.replaceChildren(
+      PG.segGauge({aria: 'VO2máx ' + TP.fmt(v, 1) + ', classificação ' + band.name, segs, equal: true, value: v, text: TP.fmt(v, 1), unit: 'ml/kg/min', label: band.name, mark: mk('status', 'vo2_max_running')}),
+      div('po-sub po-c', 'Idade fitness ' + TP.fmt(r.fitness_age) + ' anos')
+    );
+  });
+
+  const STAGE = {deep: {c: '#2f6e12', h: 0.3, n: 'Profundo'}, light: {c: '#8fd16a', h: 0.55, n: 'Leve'}, rem: {c: '#d63cbf', h: 0.8, n: 'REM'}, awake: {c: '#f4a6cf', h: 1, n: 'Acordado'}};
+  dash.draw('g-sleep', (el) => {
+    const r = TP.row0('sleep');
+    if (!r || r.sleep_score == null) { empty(el); return; }
+    let stages = []; try { stages = JSON.parse(r.stages || '[]'); } catch (e) { stages = []; }
+    const top = div('po-sl-top');
+    const a = div(); a.append(div('po-big', TP.fmt(r.sleep_score), mk('sleep', 'sleep_score')), div('po-sub', TP.pt[r.sleep_score_qualifier] || r.sleep_score_qualifier || ''));
+    const b = div('po-r'); b.append(div('po-mid-n', hm(r.sleep_hours), mk('sleep', 'sleep_hours')), div('po-sub', 'Duração'));
+    top.append(a, b);
+    const total = stages.length ? stages[stages.length - 1].to_min : (+r.sleep_hours || 0) * 60;
+    // Drawn in real pixels from the box's width, so bars never stretch
+    const W = Math.max(120, el.clientWidth || 160), H = 84;
+    const svg = PG.el('svg', {viewBox: `0 0 ${W} ${H}`, width: String(W), height: String(H), class: 'po-hyp', role: 'img', style: `display:block;width:100%;height:${H}px;shape-rendering:crispEdges`,
+      'aria-label': 'Fases do sono: profundo ' + hm(r.deep_sleep_hours) + ', leve ' + hm(r.light_sleep_hours) + ', REM ' + hm(r.rem_sleep_hours)});
+    const sx = W / Math.max(1, total);
+    stages.forEach((s) => { const k = STAGE[s.stage]; if (!k) return; const x = s.from_min * sx, w = Math.max((s.to_min - s.from_min) * sx, 1.5); svg.append(PG.el('rect', {x: x.toFixed(2), y: (H * (1 - k.h)).toFixed(2), width: w.toFixed(2), height: (H * k.h).toFixed(2), style: `fill:${k.c}`})); });
+    const axis = div('po-axis'); axis.append(div(null, String(r.sleep_start || '').slice(11, 16)), div(null, String(r.sleep_end || '').slice(11, 16)));
+    const keys = div('po-keys');
+    [['deep', r.deep_sleep_hours], ['light', r.light_sleep_hours], ['rem', r.rem_sleep_hours]].forEach(([k, h]) => { const s = document.createElement('span'); const i = document.createElement('i'); i.style.background = STAGE[k].c; s.append(i, STAGE[k].n + ' ' + hm(h)); keys.append(s); });
+    el.replaceChildren(top, svg, axis, keys);
+  });
+
+  dash.draw('g-hrv', (el) => {
+    const r = TP.row0('hrv');
+    if (!r || r.last_night_avg_ms == null) { empty(el); return; }
+    const v = +r.last_night_avg_ms, wk = r.weekly_avg_ms != null ? +r.weekly_avg_ms : null;
+    const band = r.baseline_balanced_low_ms != null && r.baseline_balanced_high_ms != null ? [+r.baseline_balanced_low_ms, +r.baseline_balanced_high_ms] : null;
+    el.replaceChildren(
+      PG.fillGauge({aria: 'HRV noturno ' + v + ' ms; média de 7 dias ' + (wk ?? '—') + ' ms', min: 20, max: 80, value: v, tick: wk, band, text: TP.fmt(v), unit: 'ms', label: TP.pt[r.hrv_status] || r.hrv_status || '', mark: mk('hrv', 'last_night_avg_ms')}),
+      div('po-sub po-c', 'Média 7 dias: ' + TP.fmt(wk) + ' ms')
+    );
+  });
+
+  dash.draw('g-bb', (el) => {
+    const r = TP.row0('bb');
+    const v = r && r.latest_level != null ? +r.latest_level : null;
+    if (v == null) { empty(el); return; }
+    const two = div('po-two');
+    const a = div(); a.append(div('n', '+' + TP.fmt(r.charged), mk('bb', 'charged')), div('t', 'Carregada'));
+    const b = div('po-r'); b.append(div('n', '−' + TP.fmt(r.drained), mk('bb', 'drained')), div('t', 'Esgotada'));
+    two.append(a, b);
+    el.replaceChildren(
+      PG.fillGauge({aria: 'Body Battery agora ' + v + ' de 100', min: 0, max: 100, value: v, text: TP.fmt(v), unit: 'agora', mark: mk('bb', 'latest_level')}),
+      two
+    );
+  });
+
+  dash.draw('g-energy', (el) => {
+    const d = TP.row0('daily');
+    if (!d || d.total_calories == null) { empty(el); return; }
+    const act = +d.active_calories || 0, rest = +d.bmr_calories || Math.max(0, d.total_calories - act), tot = act + rest || 1;
+    const big = div('po-big', TP.fmt(d.total_calories), mk('daily', 'total_calories'));
+    const sm = document.createElement('small'); sm.textContent = 'kcal'; big.append(sm);
+    const split = div('po-split', null, {role: 'img', 'aria-label': 'Ativo ' + TP.fmt(act) + ' kcal, em repouso ' + TP.fmt(rest) + ' kcal'});
+    const sa = document.createElement('span'); sa.style.flex = String(act / tot); sa.style.background = '#e5484d';
+    const sb = document.createElement('span'); sb.style.flex = String(rest / tot); sb.style.background = '#5cb82e';
+    split.append(sa, sb);
+    const two = div('po-two');
+    const a = div(); a.append(div('n', TP.fmt(act), mk('daily', 'active_calories')), div('t', 'Ativo'));
+    const b = div('po-r'); b.append(div('n', TP.fmt(rest), mk('daily', 'bmr_calories')), div('t', 'Em repouso'));
+    two.append(a, b);
+    const nodes = [big, split, two];
+    const t = TP.today('nutri');
+    if (t) {
+      const ing = div('po-ing');
+      const row = div('po-two');
+      row.append(div('t', 'Ingeridas'), div('t', TP.fmt(t.row.calorias) + ' / ' + TP.fmt(t.row.meta_kcal) + ' kcal', {'data-source': 'nutri', 'data-field': 'calorias', 'data-row': String(t.i)}));
+      const bar = div('po-bar'); const f = document.createElement('span'); f.style.width = Math.min(100, (t.row.calorias || 0) / (t.row.meta_kcal || 1) * 100) + '%'; bar.append(f);
+      ing.append(row, bar); nodes.push(ing);
+    }
+    el.replaceChildren(...nodes);
+  });
+
+  dash.draw('g-status', (el) => {
+    const r = TP.row0('status');
+    if (!r || r.acute_load == null) { empty(el); return; }
+    const lo = +r.chronic_load_target_min || 0, hi = +r.chronic_load_target_max || (+r.acute_load * 1.2), max = hi * 1.5;
+    const segs = [
+      {from: 0, to: lo, color: '#a9dc8a', name: 'Baixa'},
+      {from: lo, to: hi, color: '#5cb82e', name: 'Ideal'},
+      {from: hi, to: hi * 1.25, color: '#f08c2e', name: 'Alta'},
+      {from: hi * 1.25, to: max, color: '#e5484d', name: 'Muito alta'}
+    ];
+    const v = +r.acute_load, band = segs.find((x) => v < x.to) || segs[3];
+    const wrap = div('po-st');
+    const g = PG.segGauge({aria: 'Carga aguda ' + TP.fmt(v) + ', faixa ' + band.name + ' (ideal ' + TP.fmt(lo) + '–' + TP.fmt(hi) + ')', segs, value: v, text: TP.fmt(v), unit: 'carga aguda', label: band.name, mark: mk('status', 'acute_load')});
+    const side = div('po-kv');
+    [['Aguda:crônica', TP.fmt(r.acute_chronic_ratio, 1), 'acute_chronic_ratio'], ['Carga crônica', TP.fmt(r.chronic_load), 'chronic_load'], ['Faixa ideal', TP.fmt(lo) + '–' + TP.fmt(hi), 'chronic_load_target_max']]
+      .forEach(([l, val, f]) => { const x = div(); x.append(div('lbl', l), div('v', val, mk('status', f))); side.append(x); });
+    wrap.append(g, side);
+    const focus = div('po-focus');
+    focus.append(div('lbl', 'Foco da carga · 4 semanas'));
+    const fx = [['Aeróbico leve', r.monthly_load_aerobic_low, '#5cb82e', 'monthly_load_aerobic_low'], ['Aeróbico intenso', r.monthly_load_aerobic_high, '#f08c2e', 'monthly_load_aerobic_high'], ['Anaeróbico', r.monthly_load_anaerobic, '#8b5cf6', 'monthly_load_anaerobic']];
+    const fmax = Math.max(1, ...fx.map((x) => +x[1] || 0));
+    fx.forEach(([n, val, c, f]) => {
+      const row = div('po-frow');
+      const bar = div('po-bar'); const s = document.createElement('span'); s.style.width = ((+val || 0) / fmax * 100) + '%'; s.style.background = c; bar.append(s);
+      row.append(div('n', n), bar, div('v', TP.fmt(val), mk('status', f)));
+      focus.append(row);
+    });
+    focus.append(div('po-sub', r.load_balance_feedback ? (TP.balance[r.load_balance_feedback] || r.load_balance_feedback) : ''));
+    el.replaceChildren(wrap, focus);
+  });
+})();
+</script>

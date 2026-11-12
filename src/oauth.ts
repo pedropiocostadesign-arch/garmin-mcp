@@ -148,7 +148,8 @@ export type CodeRecord = PendingRequest & { sub: string };
  */
 export type LoginState =
   | { intent: 'mcp'; requestId: string; invite?: string }
-  | { intent: 'connect'; invite?: string };
+  | { intent: 'connect'; invite?: string }
+  | { intent: 'dashboard'; invite?: undefined };
 
 const k = {
   client: (id: string) => `oauth:client:${id}`,
