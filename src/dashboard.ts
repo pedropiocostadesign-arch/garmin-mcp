@@ -64,7 +64,11 @@ export function dashboardPage(): string {
   if (cachedPage) return cachedPage;
   const dir = join(process.cwd(), 'dashboard');
   const read = (f: string) => readFileSync(join(dir, f), 'utf8');
-  const body = read('index.html').replace(/<link rel="stylesheet" href="avatar\.css">\s*/, '');
+  // The page names its scripts as sibling files, as the Claude copy loads them;
+  // here they are inlined so the whole page is one response.
+  const body = read('index.html')
+    .replace(/<link rel="stylesheet" href="avatar\.css">\s*/, '')
+    .replace(/<script src="([\w.-]+\.js)"><\/script>/g, (_m, f: string) => `<script>\n${read(f)}</script>`);
   // Function replacers: the page's scripts are full of `$` that a string
   // replacement would read as capture-group patterns.
   cachedPage = read('shell.html')
