@@ -115,8 +115,10 @@ window.PG = (() => {
     const v = r && r.latest_level != null ? +r.latest_level : null;
     if (v == null) { empty(el); return; }
     const two = div('po-two');
-    const a = div(); a.append(div('n', '+' + TP.fmt(r.charged), mk('bb', 'charged')), div('t', 'Carregada'));
-    const b = div('po-r'); b.append(div('n', '−' + TP.fmt(r.drained), mk('bb', 'drained')), div('t', 'Esgotada'));
+    // The sign sits outside the marked number, so the mark matches the data
+    const signed = (sign, v, field) => { const n = div('n', sign); const x = document.createElement('span'); x.textContent = TP.fmt(v); for (const [k, val] of Object.entries(mk('bb', field))) x.setAttribute(k, val); n.append(x); return n; };
+    const a = div(); a.append(signed('+', r.charged, 'charged'), div('t', 'Carregada'));
+    const b = div('po-r'); b.append(signed('−', r.drained, 'drained'), div('t', 'Esgotada'));
     two.append(a, b);
     el.replaceChildren(
       PG.fillGauge({aria: 'Body Battery agora ' + v + ' de 100', min: 0, max: 100, value: v, text: TP.fmt(v), unit: 'agora', mark: mk('bb', 'latest_level')}),
