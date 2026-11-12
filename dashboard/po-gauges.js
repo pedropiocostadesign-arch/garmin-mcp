@@ -88,7 +88,7 @@ window.PG = (() => {
     top.append(a, b);
     const total = stages.length ? stages[stages.length - 1].to_min : (+r.sleep_hours || 0) * 60;
     // Drawn in real pixels from the box's width, so bars never stretch
-    const W = Math.max(120, el.clientWidth || 160), H = 84;
+    const W = Math.max(120, el.clientWidth || 160), H = 60;
     const svg = PG.el('svg', {viewBox: `0 0 ${W} ${H}`, width: String(W), height: String(H), class: 'po-hyp', role: 'img', style: `display:block;width:100%;height:${H}px;shape-rendering:crispEdges`,
       'aria-label': 'Fases do sono: profundo ' + hm(r.deep_sleep_hours) + ', leve ' + hm(r.light_sleep_hours) + ', REM ' + hm(r.rem_sleep_hours)});
     const sx = W / Math.max(1, total);
